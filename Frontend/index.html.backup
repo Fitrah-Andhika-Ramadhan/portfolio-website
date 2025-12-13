@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <title>Fitrah's Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans antialiased">
+
+    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
+        <h1 class="text-2xl font-bold tracking-tighter">FITRAH.<span class="text-blue-500">DEV</span></h1>
+        <a href="admin.html" class="text-gray-400 hover:text-white transition">Admin Login</a>
+    </nav>
+
+    <header class="text-center py-20 px-4">
+        <h2 class="text-5xl font-extrabold mb-4">Membangun Solusi Digital</h2>
+        <p class="text-gray-400 text-xl max-w-2xl mx-auto">Selamat datang di portfolio saya. Berikut adalah project yang telah saya kerjakan menggunakan teknologi Docker & Microservices.</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 pb-20">
+        <div id="project-list" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            </div>
+    </main>
+
+    <script>
+        // Fetch Data dari API Backend
+        fetch('/api/projects')
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('project-list');
+                
+                if(data.length === 0) {
+                    container.innerHTML = '<p class="text-center col-span-3 text-gray-500">Belum ada project.</p>';
+                    return;
+                }
+
+                data.forEach(project => {
+                    const card = `
+                        <div class="bg-gray-800 rounded-xl overflow-hidden hover:transform hover:-translate-y-2 transition duration-300 shadow-lg">
+                            <img src="${project.image}" alt="${project.title}" class="w-full h-48 object-cover opacity-80 hover:opacity-100 transition">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">${project.title}</h3>
+                                <p class="text-gray-400 text-sm">${project.description}</p>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # --- LANTAI 1: DATABASE (Gudang Data) ---
+  postgres-db:
+    image: postgres:15-alpine  # Kita download PostgreSQL versi ringan (Alpine)
+    environment:
+      # Kita bikin username & password database di sini
+      - POSTGRES_USER=fitrah
+      - POSTGRES_PASSWORD=rahasia123
+      - POSTGRES_DB=portfolio_db
+    volumes:
+      # Agar kalau container mati, datanya TIDAK HILANG.
+      # Kita simpan di volume bernama 'db-data'
+      - db-data:/var/lib/postgresql/data
+
+  # --- LANTAI 2: BACKEND (Otak Aplikasi) ---
+  backend:
+    build: ./backend  # Docker, tolong rakit kode di folder 'backend'
+    volumes:
+      - ./backend:/app  # Fitur Hot-Reload: folder laptop disambung ke container
+    environment:
+      # INI KUNCI PENTINGNYA!
+      # Backend harus tahu alamat database. Rumusnya:
+      # postgresql://[user]:[password]@[nama_service_db]:[port]/[nama_db]
+      - DATABASE_URL=postgresql://fitrah:rahasia123@postgres-db:5432/portfolio_db
+    depends_on:
+      - postgres-db  # Backend baru boleh nyala kalau Database sudah siap
+
+  # --- LANTAI 3: NGINX (Pintu Gerbang) ---
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"  # Buka pintu 80 di laptopmu
+    volumes:
+      # Masukkan settingan Nginx kita
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # Masukkan file HTML/Frontend kita agar bisa dibaca Nginx
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - backend  # Nginx nyala kalau Backend sudah siap
+
+# --- AREA PARKIR (Volume) ---
+volumes:
+  db-data:  # Kita daftarkan tempat parkir data database di sini

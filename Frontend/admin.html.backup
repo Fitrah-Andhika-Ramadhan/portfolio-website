@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - Fitrah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-10">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Admin Dashboard</h1>
+            <a href="index.html" class="text-blue-500 hover:underline">← Kembali ke Portfolio</a>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-bold mb-4">Tambah Project Baru</h2>
+            <div class="space-y-4">
+                <input type="text" id="title" placeholder="Judul Project" class="w-full p-2 border rounded">
+                <textarea id="desc" placeholder="Deskripsi Singkat" class="w-full p-2 border rounded"></textarea>
+                <input type="text" id="img" placeholder="URL Gambar (misal: https://source.unsplash.com/random)" class="w-full p-2 border rounded">
+                <button onclick="addProject()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Simpan Project</button>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4">Daftar Project</h2>
+            <ul id="admin-list" class="divide-y">
+                </ul>
+        </div>
+    </div>
+
+    <script>
+        function loadProjects() {
+            fetch('/api/projects').then(res => res.json()).then(data => {
+                const list = document.getElementById('admin-list');
+                list.innerHTML = '';
+                data.forEach(p => {
+                    list.innerHTML += `
+                        <li class="py-4 flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <img src="${p.image}" class="w-16 h-16 object-cover rounded">
+                                <div>
+                                    <p class="font-bold">${p.title}</p>
+                                    <p class="text-sm text-gray-500">${p.description}</p>
+                                </div>
+                            </div>
+                            <button onclick="deleteProject(${p.id})" class="text-red-500 hover:text-red-700 font-bold border border-red-200 p-2 rounded">Hapus</button>
+                        </li>
+                    `;
+                });
+            });
+        }
+
+        function addProject() {
+            const data = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('desc').value,
+                image: document.getElementById('img').value
+            };
+            
+            fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(() => {
+                alert('Project tersimpan!');
+                loadProjects();
+                // Clear form
+                document.getElementById('title').value = ''; 
+            });
+        }
+
+        function deleteProject(id) {
+            if(confirm('Yakin hapus?')) {
+                fetch(`/api/projects/${id}`, { method: 'DELETE' })
+                .then(() => loadProjects());
+            }
+        }
+
+        loadProjects(); // Load awal
+    </script>
+</body>
+</html>
