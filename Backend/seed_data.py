@@ -1,8 +1,13 @@
 # Sample data initialization script
 import requests
 import time
+import os
+from dotenv import load_dotenv
 
-BASE_URL = "http://localhost"
+# Load environment variables
+load_dotenv()
+
+BASE_URL = os.environ.get('BASE_URL', 'http://localhost')
 
 def add_sample_data():
     print("🚀 Adding sample data to portfolio...")
@@ -193,7 +198,7 @@ def add_sample_data():
     print("\n✨ Sample data added successfully!")
     print(f"🌐 Visit: {BASE_URL}")
     print(f"👨‍💼 Admin: {BASE_URL}/admin.html")
-    print("🔐 Login: admin / admin123")
+    print("🔐 Login: admin (tanpa password)")
 
 if __name__ == "__main__":
     print("⏳ Waiting for services to be ready...")

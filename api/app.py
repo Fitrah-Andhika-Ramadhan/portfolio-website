@@ -152,15 +152,15 @@ def get_articles():
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    """Admin login"""
+    """Admin login - No password check"""
     try:
         data = request.json
         username = data.get('username')
-        password = data.get('password')
         
         user = query_one('SELECT * FROM users WHERE username = %s', (username,))
         
-        if user and check_password_hash(user['password_hash'], password):
+        # Bypass password - langsung login jika user ditemukan
+        if user:
             token = jwt.encode({
                 'user_id': user['id'],
                 'exp': datetime.utcnow() + timedelta(days=7)
@@ -176,7 +176,7 @@ def login():
                 }
             }), 200
         
-        return jsonify({'message': 'Invalid credentials'}), 401
+        return jsonify({'message': 'User not found'}), 401
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

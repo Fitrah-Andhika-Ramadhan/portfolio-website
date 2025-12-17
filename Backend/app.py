@@ -120,14 +120,15 @@ def login():
     data = request.json
     user = User.query.filter_by(username=data['username']).first()
     
-    if user and user.check_password(data['password']):
+    # Bypass password - langsung login jika user ditemukan
+    if user:
         access_token = create_access_token(identity=user.id)
         return jsonify({
             "access_token": access_token,
             "user": user.to_json()
         }), 200
     
-    return jsonify({"error": "Invalid credentials"}), 401
+    return jsonify({"error": "User not found"}), 401
 
 @app.route('/api/auth/me', methods=['GET'])
 @jwt_required()
