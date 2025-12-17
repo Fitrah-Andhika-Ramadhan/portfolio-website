@@ -229,6 +229,11 @@
     <div id="modal-container"></div>
 
     <script>
+        // API Configuration
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5000/api'
+            : '/api'; // Will use relative path on production
+
         let token = localStorage.getItem('admin_token');
         let categories = [];
 
@@ -244,7 +249,7 @@
             const data = Object.fromEntries(formData);
 
             try {
-                const res = await fetch('/api/auth/login', {
+                const res = await fetch(\/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -277,13 +282,13 @@
         }
 
         async function loadCategories() {
-            const res = await fetch('/api/categories');
+            const res = await fetch(\/categories');
             categories = await res.json();
         }
 
         async function loadDashboardData() {
             try {
-                const res = await fetch('/api/stats');
+                const res = await fetch(\/stats');
                 const stats = await res.json();
                 
                 document.getElementById('dash-projects').textContent = stats.total_projects;
@@ -292,7 +297,7 @@
                 document.getElementById('dash-messages').textContent = stats.unread_messages;
 
                 // Load recent data
-                const dashRes = await fetch('/api/dashboard');
+                const dashRes = await fetch(\/dashboard');
                 const dashData = await dashRes.json();
                 
                 // Recent projects
@@ -347,7 +352,7 @@
 
         async function loadProjects() {
             try {
-                const res = await fetch('/api/projects?per_page=50');
+                const res = await fetch(\/projects?per_page=50');
                 const data = await res.json();
                 
                 const list = document.getElementById('projects-list');
@@ -377,7 +382,7 @@
             if (!confirm('Delete this project?')) return;
             
             try {
-                await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+                await fetch(`${API_BASE_URL}/projects/${id}`, { method: 'DELETE' });
                 loadProjects();
             } catch (error) {
                 console.error('Error deleting project:', error);
@@ -420,7 +425,7 @@
                 const data = Object.fromEntries(formData);
                 
                 try {
-                    await fetch('/api/projects', {
+                    await fetch(\/projects', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
@@ -436,7 +441,7 @@
         }
 
         async function loadSkills() {
-            const res = await fetch('/api/skills');
+            const res = await fetch(\/skills');
             const skills = await res.json();
             
             document.getElementById('skills-list').innerHTML = skills.map(s => `
@@ -462,7 +467,7 @@
 
         async function deleteSkill(id) {
             if (!confirm('Delete this skill?')) return;
-            await fetch(`/api/skills/${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE_URL}/skills/${id}`, { method: 'DELETE' });
             loadSkills();
         }
 
@@ -495,7 +500,7 @@
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
                 
-                await fetch('/api/skills', {
+                await fetch(\/skills', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -506,7 +511,7 @@
         }
 
         async function loadExperiences() {
-            const res = await fetch('/api/experiences');
+            const res = await fetch(\/experiences');
             const experiences = await res.json();
             
             document.getElementById('experiences-list').innerHTML = experiences.map(e => `
@@ -529,7 +534,7 @@
 
         async function deleteExperience(id) {
             if (!confirm('Delete this experience?')) return;
-            await fetch(`/api/experiences/${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE_URL}/experiences/${id}`, { method: 'DELETE' });
             loadExperiences();
         }
 
@@ -571,7 +576,7 @@
                 const data = Object.fromEntries(formData);
                 data.current = formData.get('current') === 'on';
                 
-                await fetch('/api/experiences', {
+                await fetch(\/experiences', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -582,7 +587,7 @@
         }
 
         async function loadArticles() {
-            const res = await fetch('/api/articles?published=false');
+            const res = await fetch(\/articles?published=false');
             const data = await res.json();
             
             document.getElementById('articles-list').innerHTML = data.articles.map(a => `
@@ -607,7 +612,7 @@
         }
 
         async function loadContacts() {
-            const res = await fetch('/api/contacts');
+            const res = await fetch(\/contacts');
             const contacts = await res.json();
             
             document.getElementById('contacts-list').innerHTML = contacts.map(c => `
@@ -630,7 +635,7 @@
         }
 
         async function markAsRead(id) {
-            await fetch(`/api/contacts/${id}/read`, { method: 'PUT' });
+            await fetch(`${API_BASE_URL}/contacts/${id}/read`, { method: 'PUT' });
             loadContacts();
             loadDashboardData();
         }

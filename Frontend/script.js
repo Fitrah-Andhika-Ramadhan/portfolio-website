@@ -1,3 +1,8 @@
+// API Configuration
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : '/api'; // Will use relative path on production (Vercel will proxy to Railway)
+
 // Global state
 let currentPage = 1;
 let currentCategory = 'all';
@@ -82,7 +87,7 @@ function setupScrollEffects() {
 // Load Stats
 async function loadStats() {
     try {
-        const res = await fetch('/api/stats');
+        const res = await fetch(`${API_BASE_URL}/stats`);
         const data = await res.json();
         
         animateNumber('stat-projects', data.total_projects);
@@ -115,7 +120,7 @@ function animateNumber(id, target) {
 // Load Categories
 async function loadCategories() {
     try {
-        const res = await fetch('/api/categories');
+        const res = await fetch(`${API_BASE_URL}/categories`);
         const categories = await res.json();
         
         const filterContainer = document.getElementById('category-filters');
@@ -238,7 +243,7 @@ function createProjectCard(project) {
 // Like Project
 async function likeProject(id) {
     try {
-        const res = await fetch(`/api/projects/${id}/like`, { method: 'POST' });
+        const res = await fetch(`${API_BASE_URL}/projects/${id}/like`, { method: 'POST' });
         const data = await res.json();
         document.getElementById(`likes-${id}`).textContent = data.likes;
     } catch (error) {
@@ -296,7 +301,7 @@ function changePage(page) {
 // Load Skills
 async function loadSkills() {
     try {
-        const res = await fetch('/api/skills');
+        const res = await fetch(`${API_BASE_URL}/skills`);
         const skills = await res.json();
         
         const container = document.getElementById('skills-container');
@@ -325,7 +330,7 @@ async function loadSkills() {
 // Load Experiences
 async function loadExperiences() {
     try {
-        const res = await fetch('/api/experiences');
+        const res = await fetch(`${API_BASE_URL}/experiences`);
         const experiences = await res.json();
         
         const container = document.getElementById('experience-timeline');
@@ -359,7 +364,7 @@ async function loadExperiences() {
 // Load Articles
 async function loadArticles() {
     try {
-        const res = await fetch('/api/articles?per_page=6');
+        const res = await fetch(`${API_BASE_URL}/articles?per_page=6`);
         const data = await res.json();
         
         const container = document.getElementById('blog-list');
@@ -412,7 +417,7 @@ async function handleContactSubmit(e) {
     const data = Object.fromEntries(formData);
     
     try {
-        const res = await fetch('/api/contact', {
+        const res = await fetch(`${API_BASE_URL}/contact`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
