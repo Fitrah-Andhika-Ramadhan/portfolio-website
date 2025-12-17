@@ -202,3 +202,33 @@ def get_dashboard(current_user):
 @app.route('/api/health', methods=['GET'])
 def health():
     return jsonify({'status': 'ok'}), 200
+
+# ============= SERVE FRONTEND =============
+from flask import send_file, send_from_directory
+import os
+
+# Serve static files
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    """Serve Frontend files"""
+    frontend_dir = os.path.join(os.path.dirname(__file__), '..', 'Frontend')
+    
+    # If path is empty or root, serve index.html
+    if not path or path == '/':
+        return send_file(os.path.join(frontend_dir, 'index.html'), mimetype='text/html')
+    
+    # If it's admin.html or script.js, serve them directly
+    if path in ['admin.html', 'script.js', 'index.html']:
+        file_path = os.path.join(frontend_dir, path)
+        if os.path.exists(file_path):
+            mimetype = 'text/html' if path.endswith('.html') else 'text/javascript'
+            return send_file(file_path, mimetype=mimetype)
+    
+    # Try to serve as static file first
+    file_path = os.path.join(frontend_dir, path)
+    if os.path.exists(file_path):
+        return send_file(file_path)
+    
+    # If file doesn't exist, serve index.html (SPA routing)
+    return send_file(os.path.join(frontend_dir, 'index.html'), mimetype='text/html')
