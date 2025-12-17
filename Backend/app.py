@@ -290,6 +290,19 @@ def add_skill():
     db.session.commit()
     return jsonify(skill.to_json()), 201
 
+@app.route('/api/skills/<int:id>', methods=['PUT'])
+def update_skill(id):
+    skill = Skill.query.get_or_404(id)
+    data = request.json
+    
+    skill.name = data.get('name', skill.name)
+    skill.level = data.get('level', skill.level)
+    skill.icon = data.get('icon', skill.icon)
+    skill.category = data.get('category', skill.category)
+    
+    db.session.commit()
+    return jsonify({"message": "Skill updated", "skill": skill.to_json()})
+
 @app.route('/api/skills/<int:id>', methods=['DELETE'])
 def delete_skill(id):
     skill = Skill.query.get_or_404(id)
@@ -319,6 +332,22 @@ def add_experience():
     db.session.add(experience)
     db.session.commit()
     return jsonify(experience.to_json()), 201
+
+@app.route('/api/experiences/<int:id>', methods=['PUT'])
+def update_experience(id):
+    experience = Experience.query.get_or_404(id)
+    data = request.json
+    
+    experience.title = data.get('title', experience.title)
+    experience.company = data.get('company', experience.company)
+    experience.location = data.get('location', experience.location)
+    experience.start_date = data.get('start_date', experience.start_date)
+    experience.end_date = data.get('end_date', experience.end_date)
+    experience.description = data.get('description', experience.description)
+    experience.current = data.get('current', experience.current)
+    
+    db.session.commit()
+    return jsonify({"message": "Experience updated", "experience": experience.to_json()})
 
 @app.route('/api/experiences/<int:id>', methods=['DELETE'])
 def delete_experience(id):
@@ -374,6 +403,29 @@ def create_article():
     db.session.add(article)
     db.session.commit()
     return jsonify(article.to_json()), 201
+
+@app.route('/api/articles/<int:id>', methods=['PUT'])
+def update_article(id):
+    article = Article.query.get_or_404(id)
+    data = request.json
+    
+    article.title = data.get('title', article.title)
+    article.slug = slugify(data.get('title', article.title))
+    article.content = data.get('content', article.content)
+    article.excerpt = data.get('excerpt', article.excerpt)
+    article.cover_image = data.get('cover_image', article.cover_image)
+    article.tags = data.get('tags', article.tags)
+    article.published = data.get('published', article.published)
+    
+    db.session.commit()
+    return jsonify({"message": "Article updated", "article": article.to_json()})
+
+@app.route('/api/articles/<int:id>', methods=['DELETE'])
+def delete_article(id):
+    article = Article.query.get_or_404(id)
+    db.session.delete(article)
+    db.session.commit()
+    return jsonify({"message": "Article deleted"})
 
 # ============= COMMENT ROUTES =============
 

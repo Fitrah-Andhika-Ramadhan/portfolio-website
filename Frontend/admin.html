@@ -368,9 +368,14 @@
                                 <span><i class="fas fa-comments"></i> ${p.comments_count}</span>
                             </div>
                         </div>
-                        <button onclick="deleteProject(${p.id})" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="showEditProjectModal(${p.id})" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteProject(${p.id})" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 `).join('');
             } catch (error) {
@@ -451,9 +456,14 @@
                             <h3 class="font-bold text-lg">${s.icon || '🔧'} ${s.name}</h3>
                             <p class="text-sm text-gray-600">${s.category || 'General'}</p>
                         </div>
-                        <button onclick="deleteSkill(${s.id})" class="text-red-500 hover:text-red-700">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="showEditSkillModal(${s.id})" class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteSkill(${s.id})" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="flex items-center gap-3">
                         <div class="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
@@ -524,9 +534,14 @@
                             ${e.location ? `<p class="text-sm text-gray-600"><i class="fas fa-map-marker-alt"></i> ${e.location}</p>` : ''}
                             ${e.description ? `<p class="text-sm text-gray-700 mt-2">${e.description}</p>` : ''}
                         </div>
-                        <button onclick="deleteExperience(${e.id})" class="text-red-500 hover:text-red-700">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="showEditExperienceModal(${e.id})" class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteExperience(${e.id})" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -596,11 +611,19 @@
                     <div class="p-6">
                         <h3 class="font-bold mb-2">${a.title}</h3>
                         <p class="text-sm text-gray-600 mb-4">${a.excerpt || a.content.substring(0, 100)}...</p>
-                        <div class="flex justify-between items-center text-sm">
+                        <div class="flex justify-between items-center text-sm mb-3">
                             <span class="${a.published ? 'text-green-600' : 'text-gray-500'}">
                                 ${a.published ? '✓ Published' : '✗ Draft'}
                             </span>
                             <span class="text-gray-500">${a.views} views</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="showEditArticleModal(${a.id})" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="deleteArticle(${a.id})" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -608,7 +631,54 @@
         }
 
         function showAddArticleModal() {
-            alert('Article creation feature coming soon!');
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onclick="closeModal(event)">
+                    <div class="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <h2 class="text-2xl font-bold mb-6">Add New Article</h2>
+                        <form id="add-article-form" class="space-y-4">
+                            <input type="text" name="title" placeholder="Article Title" required class="w-full px-4 py-3 border rounded-lg">
+                            <textarea name="excerpt" placeholder="Excerpt (optional)" class="w-full px-4 py-3 border rounded-lg" rows="2"></textarea>
+                            <textarea name="content" placeholder="Article Content" required class="w-full px-4 py-3 border rounded-lg" rows="6"></textarea>
+                            <input type="url" name="cover_image" placeholder="Cover Image URL (optional)" class="w-full px-4 py-3 border rounded-lg">
+                            <input type="text" name="tags" placeholder="Tags (comma separated)" class="w-full px-4 py-3 border rounded-lg">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" name="published">
+                                <span>Publish this article</span>
+                            </label>
+                            <div class="flex gap-4">
+                                <button type="submit" class="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700">
+                                    Add Article
+                                </button>
+                                <button type="button" onclick="closeModal()" class="px-6 py-3 bg-gray-300 rounded-lg hover:bg-gray-400">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('add-article-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                data.published = formData.get('published') === 'on';
+                
+                try {
+                    await fetch(`${API_BASE_URL}/articles`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    loadArticles();
+                    alert('✅ Article added successfully!');
+                } catch (error) {
+                    console.error('Error adding article:', error);
+                    alert('❌ Failed to add article');
+                }
+            });
         }
 
         async function loadContacts() {
@@ -648,6 +718,232 @@
 
         function showAddArticleModal() {
             alert('Feature under development');
+        }
+
+        // ============= EDIT FUNCTIONS =============
+
+        async function showEditProjectModal(id) {
+            const res = await fetch(`${API_BASE_URL}/projects/${id}`);
+            const project = await res.json();
+            
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onclick="closeModal(event)">
+                    <div class="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <h2 class="text-2xl font-bold mb-6">Edit Project</h2>
+                        <form id="edit-project-form" class="space-y-4">
+                            <input type="text" name="title" value="${project.title}" placeholder="Project Title" required class="w-full px-4 py-3 border rounded-lg">
+                            <textarea name="description" placeholder="Short Description" required class="w-full px-4 py-3 border rounded-lg" rows="3">${project.description}</textarea>
+                            <input type="url" name="image" value="${project.image}" placeholder="Image URL" required class="w-full px-4 py-3 border rounded-lg">
+                            <input type="url" name="demo_url" value="${project.demo_url || ''}" placeholder="Demo URL (optional)" class="w-full px-4 py-3 border rounded-lg">
+                            <input type="url" name="github_url" value="${project.github_url || ''}" placeholder="GitHub URL (optional)" class="w-full px-4 py-3 border rounded-lg">
+                            <select name="category_id" class="w-full px-4 py-3 border rounded-lg">
+                                <option value="">Select Category</option>
+                                ${categories.map(c => `<option value="${c.id}" ${c.id == project.category_id ? 'selected' : ''}>${c.icon} ${c.name}</option>`).join('')}
+                            </select>
+                            <input type="text" name="tags" value="${project.tags || ''}" placeholder="Tags (comma separated)" class="w-full px-4 py-3 border rounded-lg">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" name="featured" ${project.featured ? 'checked' : ''}>
+                                <span>Featured Project</span>
+                            </label>
+                            <div class="flex gap-4">
+                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700">
+                                    Update Project
+                                </button>
+                                <button type="button" onclick="closeModal()" class="px-6 py-3 bg-gray-300 rounded-lg hover:bg-gray-400">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('edit-project-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                data.featured = formData.get('featured') === 'on';
+                
+                try {
+                    await fetch(`${API_BASE_URL}/projects/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    loadProjects();
+                    alert('✅ Project updated successfully!');
+                } catch (error) {
+                    console.error('Error updating project:', error);
+                    alert('❌ Failed to update project');
+                }
+            });
+        }
+
+        async function showEditSkillModal(id) {
+            const res = await fetch(`${API_BASE_URL}/skills`);
+            const skills = await res.json();
+            const skill = skills.find(s => s.id === id);
+            
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onclick="closeModal(event)">
+                    <div class="bg-white rounded-2xl p-8 max-w-md w-full" onclick="event.stopPropagation()">
+                        <h2 class="text-2xl font-bold mb-6">Edit Skill</h2>
+                        <form id="edit-skill-form" class="space-y-4">
+                            <input type="text" name="name" value="${skill.name}" placeholder="Skill Name" required class="w-full px-4 py-3 border rounded-lg">
+                            <input type="text" name="icon" value="${skill.icon || ''}" placeholder="Icon (emoji)" class="w-full px-4 py-3 border rounded-lg">
+                            <input type="number" name="level" value="${skill.level}" placeholder="Level (0-100)" min="0" max="100" required class="w-full px-4 py-3 border rounded-lg">
+                            <input type="text" name="category" value="${skill.category || ''}" placeholder="Category" class="w-full px-4 py-3 border rounded-lg">
+                            <div class="flex gap-4">
+                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700">
+                                    Update Skill
+                                </button>
+                                <button type="button" onclick="closeModal()" class="px-6 py-3 bg-gray-300 rounded-lg hover:bg-gray-400">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('edit-skill-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                await fetch(`${API_BASE_URL}/skills/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                closeModal();
+                loadSkills();
+                alert('✅ Skill updated successfully!');
+            });
+        }
+
+        async function showEditExperienceModal(id) {
+            const res = await fetch(`${API_BASE_URL}/experiences`);
+            const experiences = await res.json();
+            const exp = experiences.find(e => e.id === id);
+            
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onclick="closeModal(event)">
+                    <div class="bg-white rounded-2xl p-8 max-w-2xl w-full" onclick="event.stopPropagation()">
+                        <h2 class="text-2xl font-bold mb-6">Edit Experience</h2>
+                        <form id="edit-experience-form" class="space-y-4">
+                            <input type="text" name="title" value="${exp.title}" placeholder="Job Title" required class="w-full px-4 py-3 border rounded-lg">
+                            <input type="text" name="company" value="${exp.company}" placeholder="Company" required class="w-full px-4 py-3 border rounded-lg">
+                            <input type="text" name="location" value="${exp.location || ''}" placeholder="Location" class="w-full px-4 py-3 border rounded-lg">
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" name="start_date" value="${exp.start_date}" placeholder="Start Date (e.g. Jan 2020)" required class="w-full px-4 py-3 border rounded-lg">
+                                <input type="text" name="end_date" value="${exp.end_date || ''}" placeholder="End Date (leave empty if current)" class="w-full px-4 py-3 border rounded-lg">
+                            </div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" name="current" ${exp.current ? 'checked' : ''}>
+                                <span>Currently working here</span>
+                            </label>
+                            <textarea name="description" placeholder="Description" class="w-full px-4 py-3 border rounded-lg" rows="4">${exp.description || ''}</textarea>
+                            <div class="flex gap-4">
+                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700">
+                                    Update Experience
+                                </button>
+                                <button type="button" onclick="closeModal()" class="px-6 py-3 bg-gray-300 rounded-lg hover:bg-gray-400">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('edit-experience-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                data.current = formData.get('current') === 'on';
+                
+                await fetch(`${API_BASE_URL}/experiences/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                closeModal();
+                loadExperiences();
+                alert('✅ Experience updated successfully!');
+            });
+        }
+
+        async function showEditArticleModal(id) {
+            const res = await fetch(`${API_BASE_URL}/articles?published=false`);
+            const data = await res.json();
+            const article = data.articles.find(a => a.id === id);
+            
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onclick="closeModal(event)">
+                    <div class="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <h2 class="text-2xl font-bold mb-6">Edit Article</h2>
+                        <form id="edit-article-form" class="space-y-4">
+                            <input type="text" name="title" value="${article.title}" placeholder="Article Title" required class="w-full px-4 py-3 border rounded-lg">
+                            <textarea name="excerpt" placeholder="Excerpt (optional)" class="w-full px-4 py-3 border rounded-lg" rows="2">${article.excerpt || ''}</textarea>
+                            <textarea name="content" placeholder="Article Content" required class="w-full px-4 py-3 border rounded-lg" rows="6">${article.content}</textarea>
+                            <input type="url" name="cover_image" value="${article.cover_image || ''}" placeholder="Cover Image URL (optional)" class="w-full px-4 py-3 border rounded-lg">
+                            <input type="text" name="tags" value="${article.tags || ''}" placeholder="Tags (comma separated)" class="w-full px-4 py-3 border rounded-lg">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" name="published" ${article.published ? 'checked' : ''}>
+                                <span>Publish this article</span>
+                            </label>
+                            <div class="flex gap-4">
+                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700">
+                                    Update Article
+                                </button>
+                                <button type="button" onclick="closeModal()" class="px-6 py-3 bg-gray-300 rounded-lg hover:bg-gray-400">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('edit-article-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                data.published = formData.get('published') === 'on';
+                
+                try {
+                    await fetch(`${API_BASE_URL}/articles/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    loadArticles();
+                    alert('✅ Article updated successfully!');
+                } catch (error) {
+                    console.error('Error updating article:', error);
+                    alert('❌ Failed to update article');
+                }
+            });
+        }
+
+        async function deleteArticle(id) {
+            if (!confirm('Delete this article?')) return;
+            
+            try {
+                await fetch(`${API_BASE_URL}/articles/${id}`, { method: 'DELETE' });
+                loadArticles();
+                alert('✅ Article deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting article:', error);
+                alert('❌ Failed to delete article');
+            }
         }
     </script>
 </body>
