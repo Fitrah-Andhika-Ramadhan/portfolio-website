@@ -16,7 +16,7 @@ load_dotenv()  # Fallback to .env
 app = Flask(__name__)
 
 # CORS Configuration - Update with your production domain
-allowed_origins = os.environ.get('ALLOWED_ORIGINS', 'http://localhost,http://localhost:80').split(',')
+allowed_origins = os.environ.get('ALLOWED_ORIGINS', 'http://localhost,http://localhost:80,http://localhost:5000,http://127.0.0.1:5000').split(',')
 CORS(app, origins=allowed_origins, supports_credentials=True)
 
 # Konfigurasi
@@ -561,6 +561,14 @@ def admin():
 @app.route('/script.js')
 def script():
     return send_from_directory('../Frontend', 'script.js')
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    # Serve any file from Frontend directory
+    try:
+        return send_from_directory('../Frontend', filename)
+    except:
+        return send_from_directory('../Frontend', 'index.html')
 
 # Only call init_db if not in serverless environment
 if __name__ == "__main__":

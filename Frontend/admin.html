@@ -34,7 +34,7 @@
                     <i class="fas fa-sign-in-alt mr-2"></i> Login
                 </button>
                 
-                <a href="index.html" class="block text-center text-purple-600 hover:text-purple-700 transition">
+                <a href="/" class="block text-center text-purple-600 hover:text-purple-700 transition">
                     ← Back to Portfolio
                 </a>
             </form>
@@ -80,7 +80,7 @@
             <div id="section-dashboard" class="section">
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-3xl font-bold">Dashboard</h2>
-                    <a href="index.html" target="_blank" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                    <a href="/" target="_blank" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
                         <i class="fas fa-external-link-alt mr-2"></i> View Site
                     </a>
                 </div>
@@ -236,6 +236,11 @@
 
         let token = localStorage.getItem('admin_token');
         let categories = [];
+
+        // Clear any existing modal on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('modal-container').innerHTML = '';
+        });
 
         // Check if logged in
         if (token) {
@@ -879,58 +884,68 @@
         }
 
         async function showEditArticleModal(id) {
-            const res = await fetch(`${API_BASE_URL}/articles?published=false`);
-            const data = await res.json();
-            const article = data.articles.find(a => a.id === id);
-            
-            const modal = document.getElementById('modal-container');
-            modal.innerHTML = `
-                <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onclick="closeModal(event)">
-                    <div class="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
-                        <h2 class="text-2xl font-bold mb-6">Edit Article</h2>
-                        <form id="edit-article-form" class="space-y-4">
-                            <input type="text" name="title" value="${article.title}" placeholder="Article Title" required class="w-full px-4 py-3 border rounded-lg">
-                            <textarea name="excerpt" placeholder="Excerpt (optional)" class="w-full px-4 py-3 border rounded-lg" rows="2">${article.excerpt || ''}</textarea>
-                            <textarea name="content" placeholder="Article Content" required class="w-full px-4 py-3 border rounded-lg" rows="6">${article.content}</textarea>
-                            <input type="url" name="cover_image" value="${article.cover_image || ''}" placeholder="Cover Image URL (optional)" class="w-full px-4 py-3 border rounded-lg">
-                            <input type="text" name="tags" value="${article.tags || ''}" placeholder="Tags (comma separated)" class="w-full px-4 py-3 border rounded-lg">
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" name="published" ${article.published ? 'checked' : ''}>
-                                <span>Publish this article</span>
-                            </label>
-                            <div class="flex gap-4">
-                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700">
-                                    Update Article
-                                </button>
-                                <button type="button" onclick="closeModal()" class="px-6 py-3 bg-gray-300 rounded-lg hover:bg-gray-400">
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('edit-article-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const data = Object.fromEntries(formData);
-                data.published = formData.get('published') === 'on';
+            try {
+                const res = await fetch(`${API_BASE_URL}/articles?published=false`);
+                const data = await res.json();
+                const article = data.articles.find(a => a.id === id);
                 
-                try {
-                    await fetch(`${API_BASE_URL}/articles/${id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    closeModal();
-                    loadArticles();
-                    alert('✅ Article updated successfully!');
-                } catch (error) {
-                    console.error('Error updating article:', error);
-                    alert('❌ Failed to update article');
+                if (!article) {
+                    alert('❌ Article not found');
+                    return;
                 }
-            });
+                
+                const modal = document.getElementById('modal-container');
+                modal.innerHTML = `
+                    <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onclick="closeModal(event)">
+                        <div class="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                            <h2 class="text-2xl font-bold mb-6">Edit Article</h2>
+                            <form id="edit-article-form" class="space-y-4">
+                                <input type="text" name="title" value="${article.title || ''}" placeholder="Article Title" required class="w-full px-4 py-3 border rounded-lg">
+                                <textarea name="excerpt" placeholder="Excerpt (optional)" class="w-full px-4 py-3 border rounded-lg" rows="2">${article.excerpt || ''}</textarea>
+                                <textarea name="content" placeholder="Article Content" required class="w-full px-4 py-3 border rounded-lg" rows="6">${article.content || ''}</textarea>
+                                <input type="url" name="cover_image" value="${article.cover_image || ''}" placeholder="Cover Image URL (optional)" class="w-full px-4 py-3 border rounded-lg">
+                                <input type="text" name="tags" value="${article.tags || ''}" placeholder="Tags (comma separated)" class="w-full px-4 py-3 border rounded-lg">
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" name="published" ${article.published ? 'checked' : ''}>
+                                    <span>Publish this article</span>
+                                </label>
+                                <div class="flex gap-4">
+                                    <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700">
+                                        Update Article
+                                    </button>
+                                    <button type="button" onclick="closeModal()" class="px-6 py-3 bg-gray-300 rounded-lg hover:bg-gray-400">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('edit-article-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const data = Object.fromEntries(formData);
+                    data.published = formData.get('published') === 'on';
+                    
+                    try {
+                        await fetch(`${API_BASE_URL}/articles/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        closeModal();
+                        loadArticles();
+                        alert('✅ Article updated successfully!');
+                    } catch (error) {
+                        console.error('Error updating article:', error);
+                        alert('❌ Failed to update article');
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading article:', error);
+                alert('❌ Failed to load article');
+            }
         }
 
         async function deleteArticle(id) {
