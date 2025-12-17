@@ -21,9 +21,13 @@ CORS(app, origins=allowed_origins, supports_credentials=True)
 
 # Konfigurasi
 database_url = os.environ.get('DATABASE_URL')
-# Fix for Railway/Render (postgres:// to postgresql://)
+# Fix for Railway/Render/Vercel (postgres:// to postgresql://)
 if database_url and database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+# Default to Neon if not set
+if not database_url:
+    database_url = 'postgresql://neondb_owner:npg_EnVuj8G4bmek@ep-hidden-thunder-adyxhuf2-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
