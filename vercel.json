@@ -4,6 +4,18 @@
     {
       "src": "api/index.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "Frontend/index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "Frontend/admin.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "Frontend/script.js",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -13,19 +25,15 @@
     },
     {
       "src": "/admin.html",
-      "dest": "/Frontend/admin.html"
+      "dest": "Frontend/admin.html"
     },
     {
       "src": "/script.js",
-      "dest": "/Frontend/script.js"
-    },
-    {
-      "src": "/(.*\\.(css|png|jpg|jpeg|gif|svg|ico))",
-      "dest": "/Frontend/$1"
+      "dest": "Frontend/script.js"
     },
     {
       "src": "/",
-      "dest": "/Frontend/index.html"
+      "dest": "Frontend/index.html"
     }
   ]
 }
