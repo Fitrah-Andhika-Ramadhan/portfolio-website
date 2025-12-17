@@ -1,11 +1,19 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
+import sys
 from functools import wraps
 import jwt
 from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
-from .db import query_one, query_all, execute
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
+try:
+    from api.db import query_one, query_all, execute
+except ImportError:
+    from db import query_one, query_all, execute
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'dev-key')
@@ -232,3 +240,8 @@ def serve_frontend(path):
     
     # If file doesn't exist, serve index.html (SPA routing)
     return send_file(os.path.join(frontend_dir, 'index.html'), mimetype='text/html')
+
+# Run the app
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

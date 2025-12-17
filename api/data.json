@@ -1,0 +1,75 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@portfolio.com",
+      "password_hash": "admin123",
+      "is_admin": true
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "title": "Portfolio Website",
+      "description": "Personal portfolio website",
+      "long_description": "A modern portfolio website built with Flask and React",
+      "image_url": "/images/portfolio.jpg",
+      "demo_url": "https://example.com",
+      "github_url": "https://github.com/example/portfolio",
+      "category_id": 1,
+      "tags": "web,flask,react",
+      "views": 150,
+      "likes": 25,
+      "featured": true,
+      "created_at": "2025-12-17T16:29:37.422560",
+      "updated_at": "2025-12-17T16:29:37.422603"
+    }
+  ],
+  "skills": [
+    {
+      "id": 1,
+      "name": "Python",
+      "level": 90,
+      "category": "Backend"
+    },
+    {
+      "id": 2,
+      "name": "JavaScript",
+      "level": 85,
+      "category": "Frontend"
+    },
+    {
+      "id": 3,
+      "name": "React",
+      "level": 80,
+      "category": "Frontend"
+    },
+    {
+      "id": 4,
+      "name": "Flask",
+      "level": 90,
+      "category": "Backend"
+    }
+  ],
+  "experiences": [
+    {
+      "id": 1,
+      "title": "Senior Developer",
+      "company": "Tech Company",
+      "description": "Led development team",
+      "start_date": "2020-01-01",
+      "end_date": "2023-12-31",
+      "is_current": false
+    }
+  ],
+  "articles": [
+    {
+      "id": 1,
+      "title": "Getting Started with Flask",
+      "content": "Learn Flask basics",
+      "published": true,
+      "created_at": "2025-12-17T16:29:37.422612"
+    }
+  ]
+}
