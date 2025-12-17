@@ -249,7 +249,7 @@
             const data = Object.fromEntries(formData);
 
             try {
-                const res = await fetch(\/auth/login', {
+                const res = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -282,13 +282,13 @@
         }
 
         async function loadCategories() {
-            const res = await fetch(\/categories');
+            const res = await fetch(`${API_BASE_URL}/categories`);
             categories = await res.json();
         }
 
         async function loadDashboardData() {
             try {
-                const res = await fetch(\/stats');
+                const res = await fetch(`${API_BASE_URL}/stats`);
                 const stats = await res.json();
                 
                 document.getElementById('dash-projects').textContent = stats.total_projects;
@@ -297,7 +297,7 @@
                 document.getElementById('dash-messages').textContent = stats.unread_messages;
 
                 // Load recent data
-                const dashRes = await fetch(\/dashboard');
+                const dashRes = await fetch(`${API_BASE_URL}/dashboard`);
                 const dashData = await dashRes.json();
                 
                 // Recent projects
@@ -352,7 +352,7 @@
 
         async function loadProjects() {
             try {
-                const res = await fetch(\/projects?per_page=50');
+                const res = await fetch(`${API_BASE_URL}/projects?per_page=50`);
                 const data = await res.json();
                 
                 const list = document.getElementById('projects-list');
@@ -425,7 +425,7 @@
                 const data = Object.fromEntries(formData);
                 
                 try {
-                    await fetch(\/projects', {
+                    await fetch(`${API_BASE_URL}/projects`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
@@ -441,7 +441,7 @@
         }
 
         async function loadSkills() {
-            const res = await fetch(\/skills');
+            const res = await fetch(`${API_BASE_URL}/skills`);
             const skills = await res.json();
             
             document.getElementById('skills-list').innerHTML = skills.map(s => `
@@ -500,7 +500,7 @@
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
                 
-                await fetch(\/skills', {
+                await fetch(`${API_BASE_URL}/skills`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -511,7 +511,7 @@
         }
 
         async function loadExperiences() {
-            const res = await fetch(\/experiences');
+            const res = await fetch(`${API_BASE_URL}/experiences`);
             const experiences = await res.json();
             
             document.getElementById('experiences-list').innerHTML = experiences.map(e => `
@@ -576,7 +576,7 @@
                 const data = Object.fromEntries(formData);
                 data.current = formData.get('current') === 'on';
                 
-                await fetch(\/experiences', {
+                await fetch(`${API_BASE_URL}/experiences`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -587,7 +587,7 @@
         }
 
         async function loadArticles() {
-            const res = await fetch(\/articles?published=false');
+            const res = await fetch(`${API_BASE_URL}/articles?published=false`);
             const data = await res.json();
             
             document.getElementById('articles-list').innerHTML = data.articles.map(a => `
@@ -612,7 +612,7 @@
         }
 
         async function loadContacts() {
-            const res = await fetch(\/contacts');
+            const res = await fetch(`${API_BASE_URL}/contacts`);
             const contacts = await res.json();
             
             document.getElementById('contacts-list').innerHTML = contacts.map(c => `
