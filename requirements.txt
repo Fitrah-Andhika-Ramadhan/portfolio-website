@@ -1,0 +1,9 @@
+flask
+flask-cors
+flask-sqlalchemy
+flask-jwt-extended
+psycopg2-binary
+werkzeug
+pillow
+python-slugify
+python-dotenv
