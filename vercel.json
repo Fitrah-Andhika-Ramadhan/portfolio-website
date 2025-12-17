@@ -7,6 +7,10 @@
       "config": {
         "maxLambdaSize": "15mb"
       }
+    },
+    {
+      "src": "Frontend/(.*)",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -23,7 +27,15 @@
       "dest": "Frontend/script.js"
     },
     {
+      "src": "/(.*\\.)(js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$",
+      "dest": "Frontend/$1"
+    },
+    {
       "src": "/",
+      "dest": "Frontend/index.html"
+    },
+    {
+      "src": "/(.*)",
       "dest": "Frontend/index.html"
     }
   ]
